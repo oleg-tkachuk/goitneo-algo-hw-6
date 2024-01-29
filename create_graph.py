@@ -1,6 +1,7 @@
+import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-import numpy as np
+import graph_algorithms as ga
 
 # Setting a seed to generate a random graph
 seed = 25
