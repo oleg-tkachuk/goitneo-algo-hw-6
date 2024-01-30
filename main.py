@@ -1,14 +1,19 @@
 import os
 import sys
+import random
 import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
 import graph_algorithms as ga
+import matplotlib.pyplot as plt
 
 # Create a random Erdos-Renyi graph with {nodes} nodes and a connection probability of {probability}
 def create_random_graph(nodes, probability, seed):
     # Creating a graph
     G = nx.erdos_renyi_graph(n=nodes, p=probability, seed=seed)
+
+    # Adding weights to graph edges
+    for (u, v) in G.edges():
+        G[u][v]['weight'] = random.randint(1, 10)  # Weights from 1 to 10
 
     # Number of vertices and edges in the graph
     num_nodes = G.number_of_nodes()
@@ -27,8 +32,15 @@ def find_path_in_graph(G, start_node, goal_node):
 
 # Graph visualization
 def graph_visualization(G, num_nodes, num_edges, average_degree):
-    plt.figure(figsize=(10, 8))
-    nx.draw(G, with_labels=True, node_color='lightgreen', node_size=700, edge_color='gray')
+    plt.figure(figsize=(12, 10))
+    pos = nx.spring_layout(G)
+    nx.draw_networkx(G, pos, with_labels=True, node_color='lightgreen', node_size=700, edge_color='gray')
+
+    # Add edge weights as labels to a graph
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+
+    # Add title
     plt.title("Homework 6 - Task 1 | Visualization of the corporate network topology")
 
     # Add text with graph characteristics
@@ -36,13 +48,14 @@ def graph_visualization(G, num_nodes, num_edges, average_degree):
     plt.figtext(0.5, 0.05, text_str, ha="center", fontsize=12, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
     plt.show()
 
+# Main function
 def main():
     # Setting parameters for generating a random graph
-    nodes=15         # Number of nodes
-    probability=0.2  # Probability
-    seed = 25        # Seed
+    nodes = 15         # Number of nodes
+    probability = 0.2  # Probability
+    seed = 25          # Seed
 
-    start_node, goal_node = 0, 14
+    start_node, goal_node = 0, 14 # Start node, goal node
 
     graph, num_nodes, num_edges, average_degree = create_random_graph(nodes, probability, seed)
 
@@ -59,12 +72,21 @@ def main():
     print(f"Homework 6 - Task 2 | DFS path: {dfs_path}")
     print(f"Homework 6 - Task 2 | BFS path: {bfs_path}")
 
+    # Print the values of Dijkstra shortest paths from {start_node} to {goal_node}
+    for i in range(start_node, goal_node):
+        shortest_path = ga.dijkstra_path(graph, start_node, i)
+        print(f"Homework 6 - Task 3 | Dijkstra shortest path: {start_node} -> {i} == {shortest_path}")
+
+    # Visualization of grap
     graph_visualization(graph, num_nodes, num_edges, average_degree)
 
+
+# Launch the main function
 if __name__ == "__main__":
     try:
         print(f"Homework 6 | Starting...")
         main()
+        print(f"Homework 6 | Done")
     except KeyboardInterrupt:
         print(f"\nHomework 6 | Good bye!")
         try:
